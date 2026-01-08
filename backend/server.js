@@ -21,22 +21,28 @@ if (!fs.existsSync(uploadDir)) {
 connectDB();
 
 /* =========================
-   CORS (CRITICAL FIX)
+   CORS (FINAL FIX)
 ========================= */
-app.use(
-  cors({
-    origin: [
-      "https://crud-manage-user.netlify.app",
-      "https://crud-manageop.netlify.app"
-    ],
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true
-  })
-);
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+  );
+  res.header(
+    "Access-Control-Allow-Methods",
+    "GET, POST, PUT, DELETE, OPTIONS"
+  );
+
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200);
+  }
+
+  next();
+});
 
 /* =========================
-   MIDDLEWARE
+   BODY PARSERS
 ========================= */
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
