@@ -11,7 +11,6 @@ const app = express();
    ENSURE UPLOADS FOLDER
 ========================= */
 const uploadDir = path.join(__dirname, "uploads");
-
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir);
 }
@@ -22,16 +21,30 @@ if (!fs.existsSync(uploadDir)) {
 connectDB();
 
 /* =========================
+   CORS (CRITICAL FIX)
+========================= */
+app.use(
+  cors({
+    origin: [
+      "https://crud-manage-user.netlify.app",
+      "https://crud-manageop.netlify.app"
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true
+  })
+);
+
+/* =========================
    MIDDLEWARE
 ========================= */
-app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 /* =========================
    STATIC FILES
 ========================= */
-app.use("/uploads", express.static("uploads"));
+app.use("/uploads", express.static(uploadDir));
 
 /* =========================
    ROUTES
