@@ -1,11 +1,32 @@
 require("dotenv").config();
 const express = require("express");
-const cors = require("cors");
 const connectDB = require("./config/db");
 const fs = require("fs");
 const path = require("path");
 
 const app = express();
+
+/* =========================
+   CORS — MUST BE FIRST
+========================= */
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+  );
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET, POST, PUT, DELETE, OPTIONS"
+  );
+
+  // Handle preflight requests
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200);
+  }
+
+  next();
+});
 
 /* =========================
    ENSURE UPLOADS FOLDER
@@ -19,27 +40,6 @@ if (!fs.existsSync(uploadDir)) {
    CONNECT DATABASE
 ========================= */
 connectDB();
-
-/* =========================
-   CORS (FINAL FIX)
-========================= */
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
-  );
-  res.header(
-    "Access-Control-Allow-Methods",
-    "GET, POST, PUT, DELETE, OPTIONS"
-  );
-
-  if (req.method === "OPTIONS") {
-    return res.sendStatus(200);
-  }
-
-  next();
-});
 
 /* =========================
    BODY PARSERS
@@ -62,6 +62,17 @@ app.use("/api/users", require("./routes/userRoutes"));
 ========================= */
 app.get("/", (req, res) => {
   res.send("API is running");
+});
+
+/* =========================
+   GLOBAL ERROR HANDLER
+   (CRITICAL FOR CORS + MULTER)
+========================= */
+app.use((err, req, res, next) => {
+  console.error("SERVER ERROR:", err);
+  res.status(500).json({
+    message: err.message || "Internal Server Error"
+  });
 });
 
 /* =========================
