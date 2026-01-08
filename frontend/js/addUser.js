@@ -32,7 +32,7 @@ mobileInput.addEventListener("input", () => {
 form.addEventListener("submit", async e => {
   e.preventDefault();
 
-  /* ---- BASIC VALIDATION ---- */
+  // ✅ Manual validation (instead of HTML required)
   if (!photoInput.files.length) {
     alert("Please upload a photo");
     return;
@@ -50,12 +50,7 @@ form.addEventListener("submit", async e => {
       body: data
     });
 
-    let result = {};
-    try {
-      result = await res.json();
-    } catch {
-      /* backend may return empty body */
-    }
+    const result = await res.json();
 
     if (!res.ok) {
       alert(result.message || "Failed to add user");
