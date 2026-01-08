@@ -1,6 +1,5 @@
 const API_URL = "https://crud-user-backend-le9m.onrender.com/api/users";
 
-
 const form = document.getElementById("userForm");
 const uploadBox = document.getElementById("uploadBox");
 const photoInput = document.getElementById("photo");
@@ -10,32 +9,34 @@ const mobileInput = document.getElementById("mobile");
 /* =========================
    IMAGE UPLOAD PREVIEW
 ========================= */
-uploadBox.onclick = () => photoInput.click();
+uploadBox.addEventListener("click", () => photoInput.click());
 
-photoInput.onchange = () => {
+photoInput.addEventListener("change", () => {
   const file = photoInput.files[0];
   if (file) {
     preview.src = URL.createObjectURL(file);
     preview.style.display = "block";
   }
-};
+});
 
 /* =========================
    MOBILE DIGITS ONLY
 ========================= */
-function allowOnlyDigits(input) {
-  input.addEventListener("input", () => {
-    input.value = input.value.replace(/\D/g, "").slice(0, 10);
-  });
-}
-
-allowOnlyDigits(mobileInput);
+mobileInput.addEventListener("input", () => {
+  mobileInput.value = mobileInput.value.replace(/\D/g, "").slice(0, 10);
+});
 
 /* =========================
    FORM SUBMIT
 ========================= */
 form.addEventListener("submit", async e => {
   e.preventDefault();
+
+  /* ---- BASIC VALIDATION ---- */
+  if (!photoInput.files.length) {
+    alert("Please upload a photo");
+    return;
+  }
 
   const submitBtn = form.querySelector("button");
   submitBtn.disabled = true;
@@ -49,7 +50,12 @@ form.addEventListener("submit", async e => {
       body: data
     });
 
-    const result = await res.json();
+    let result = {};
+    try {
+      result = await res.json();
+    } catch {
+      /* backend may return empty body */
+    }
 
     if (!res.ok) {
       alert(result.message || "Failed to add user");
@@ -59,7 +65,7 @@ form.addEventListener("submit", async e => {
     alert("User added successfully");
     form.reset();
     preview.style.display = "none";
-  } catch (error) {
+  } catch (err) {
     alert("Server error. Please try again.");
   } finally {
     submitBtn.disabled = false;
