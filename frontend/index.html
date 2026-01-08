@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Add User</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <main class="page">
+        <div class="card single">
+
+            <h2>Add New User</h2>
+
+            <form id="userForm">
+
+                <input type="text" name="name" placeholder="Name" required>
+                <input type="date" name="dob" required>
+                <input type="email" name="email" placeholder="Email" required>
+                <input type="tel" name="mobile" id="mobile" inputmode="numeric" pattern="[0-9]{10}" maxlength="10"
+                    placeholder="Mobile Number" required />
+
+
+                <div class="upload" id="uploadBox">
+                    Click or Drop Image
+                    <img id="preview">
+                </div>
+                <input type="file" name="photo" id="photo" hidden required>
+
+                <button type="submit">Save User</button>
+
+            </form>
+
+            <a href="manage.html" class="link-btn">Manage Users →</a>
+
+        </div>
+    </main>
+
+    <script src="js/addUser.js"></script>
+</body>
+
+</html>

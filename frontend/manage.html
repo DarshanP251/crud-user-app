@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Manage Users</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <main class="page">
+
+        <section class="admin-wrapper">
+
+            <!-- HEADER -->
+            <header class="admin-header">
+                <div>
+                    <h1>Manage Users</h1>
+                    <p>View, edit and delete registered users</p>
+                </div>
+
+                <a href="index.html" class="primary-btn">+ Add User</a>
+            </header>
+
+            <!-- TABLE -->
+            <div class="table-card">
+                <div class="table-header">
+                    <span>User</span>
+                    <span>Email</span>
+                    <span>Mobile</span>
+                    <span>Actions</span>
+                </div>
+
+                <div id="records" class="table-body"></div>
+            </div>
+            <!-- EDIT USER MODAL -->
+            <div class="modal" id="editModal">
+                <div class="modal-content">
+
+                    <h2>Edit User</h2>
+
+                    <form id="editForm">
+                        <input type="text" name="name" id="editName" required />
+                        <input type="date" name="dob" id="editDob" required />
+                        <input type="email" name="email" id="editEmail" required />
+                        <input type="tel" name="mobile" id="editMobile" inputmode="numeric" pattern="[0-9]{10}"
+                            maxlength="10" required />
+
+
+                        <div class="upload" id="editUploadBox">
+                            Change Photo (optional)
+                            <img id="editPreview">
+                        </div>
+                        <input type="file" name="photo" id="editPhoto" hidden />
+
+                        <div class="modal-actions">
+                            <button type="button" class="secondary" onclick="closeModal()">Cancel</button>
+                            <button type="submit">Update</button>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+
+
+        </section>
+
+    </main>
+
+    <script src="js/manageUsers.js"></script>
+</body>
+
+</html>
