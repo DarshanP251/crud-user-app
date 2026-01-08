@@ -1,25 +1,34 @@
 const User = require("../models/User");
+const mongoose = require("mongoose");
 
-// CREATE USER
+/* =========================
+   CREATE USER
+========================= */
 exports.createUser = async (req, res) => {
   try {
+    console.log("CREATE USER HIT"); // Debug (safe to keep)
+
     const { name, dob, email, mobile } = req.body;
 
-    // Validate required fields
+    // Required fields
     if (!name || !dob || !email || !mobile) {
-      return res.status(400).json({ message: "All fields are required" });
+      return res.status(400).json({
+        message: "All fields are required"
+      });
     }
 
-    // Validate mobile number (only digits, exactly 10)
+    // Mobile validation
     if (!/^\d{10}$/.test(mobile)) {
       return res.status(400).json({
         message: "Mobile number must contain exactly 10 digits"
       });
     }
 
-    // Validate photo
+    // Photo validation
     if (!req.file) {
-      return res.status(400).json({ message: "Photo is required" });
+      return res.status(400).json({
+        message: "Photo is required"
+      });
     }
 
     const user = await User.create({
@@ -32,32 +41,48 @@ exports.createUser = async (req, res) => {
 
     res.status(201).json(user);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error(error);
+    res.status(500).json({
+      message: "Failed to create user"
+    });
   }
 };
 
-// READ USERS
+/* =========================
+   READ USERS
+========================= */
 exports.getUsers = async (req, res) => {
   try {
     const users = await User.find().sort({ createdAt: -1 });
     res.json(users);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({
+      message: "Failed to fetch users"
+    });
   }
 };
 
-// UPDATE USER
+/* =========================
+   UPDATE USER
+========================= */
 exports.updateUser = async (req, res) => {
   try {
+    const { id } = req.params;
+
+    // Validate ObjectId
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        message: "Invalid user ID"
+      });
+    }
+
     const updatedData = req.body;
 
     // Validate mobile if present
-    if (updatedData.mobile) {
-      if (!/^\d{10}$/.test(updatedData.mobile)) {
-        return res.status(400).json({
-          message: "Mobile number must contain exactly 10 digits"
-        });
-      }
+    if (updatedData.mobile && !/^\d{10}$/.test(updatedData.mobile)) {
+      return res.status(400).json({
+        message: "Mobile number must contain exactly 10 digits"
+      });
     }
 
     // Update photo if uploaded
@@ -65,33 +90,52 @@ exports.updateUser = async (req, res) => {
       updatedData.photo = req.file.filename;
     }
 
-    const user = await User.findByIdAndUpdate(
-      req.params.id,
-      updatedData,
-      { new: true }
-    );
+    const user = await User.findByIdAndUpdate(id, updatedData, {
+      new: true
+    });
 
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({
+        message: "User not found"
+      });
     }
 
     res.json(user);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({
+      message: "Failed to update user"
+    });
   }
 };
 
-// DELETE USER
+/* =========================
+   DELETE USER
+========================= */
 exports.deleteUser = async (req, res) => {
   try {
-    const user = await User.findByIdAndDelete(req.params.id);
+    const { id } = req.params;
 
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
+    // Validate ObjectId
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        message: "Invalid user ID"
+      });
     }
 
-    res.json({ message: "User deleted successfully" });
+    const user = await User.findByIdAndDelete(id);
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found"
+      });
+    }
+
+    res.json({
+      message: "User deleted successfully"
+    });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({
+      message: "Failed to delete user"
+    });
   }
 };

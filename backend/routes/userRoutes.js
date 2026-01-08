@@ -8,9 +8,27 @@ const {
   deleteUser
 } = require("../controllers/userController");
 
+/* =========================
+   PREFLIGHT (CORS)
+========================= */
+router.options("*", (req, res) => {
+  res.sendStatus(200);
+});
+
+/* =========================
+   CRUD ROUTES
+========================= */
+
+// CREATE
 router.post("/", upload.single("photo"), createUser);
+
+// READ
 router.get("/", getUsers);
+
+// UPDATE
 router.put("/:id", upload.single("photo"), updateUser);
+
+// DELETE
 router.delete("/:id", deleteUser);
 
 module.exports = router;
