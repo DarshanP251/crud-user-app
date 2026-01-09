@@ -1,5 +1,5 @@
-const API_URL = "https://crud-user-backend-le9m.onrender.com/api/users";
-const BACKEND_URL = "https://crud-user-backend-le9m.onrender.com";
+const API_URL = "https://crud-user-backend-1zr1.onrender.com/api/users";
+const BACKEND_URL = "https://crud-user-backend-1zr1.onrender.com";
 
 const records = document.getElementById("records");
 const modal = document.getElementById("editModal");

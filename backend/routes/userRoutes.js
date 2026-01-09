@@ -9,13 +9,6 @@ const {
 } = require("../controllers/userController");
 
 /* =========================
-   PREFLIGHT (CORS)
-========================= */
-router.options("*", (req, res) => {
-  res.sendStatus(200);
-});
-
-/* =========================
    CRUD ROUTES
 ========================= */
 

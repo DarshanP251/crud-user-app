@@ -20,7 +20,7 @@ app.use((req, res, next) => {
     "GET, POST, PUT, DELETE, OPTIONS"
   );
 
-  // Handle preflight requests
+  // Handle preflight
   if (req.method === "OPTIONS") {
     return res.sendStatus(200);
   }
@@ -66,7 +66,6 @@ app.get("/", (req, res) => {
 
 /* =========================
    GLOBAL ERROR HANDLER
-   (CRITICAL FOR CORS + MULTER)
 ========================= */
 app.use((err, req, res, next) => {
   console.error("SERVER ERROR:", err);
