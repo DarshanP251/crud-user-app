@@ -1,4 +1,5 @@
-const API_URL = "https://crud-user-backend-1zr1.onrender.com/api/users";
+const API_URL = "/api/users";
+
 
 const form = document.getElementById("userForm");
 const uploadBox = document.getElementById("uploadBox");
