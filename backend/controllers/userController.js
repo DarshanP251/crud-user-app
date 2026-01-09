@@ -6,29 +6,17 @@ const mongoose = require("mongoose");
 ========================= */
 exports.createUser = async (req, res) => {
   try {
-    console.log("CREATE USER HIT"); // Debug (safe to keep)
+    console.log("BODY:", req.body);
+    console.log("FILE:", req.file);
 
     const { name, dob, email, mobile } = req.body;
 
-    // Required fields
     if (!name || !dob || !email || !mobile) {
-      return res.status(400).json({
-        message: "All fields are required"
-      });
+      return res.status(400).json({ message: "All fields are required" });
     }
 
-    // Mobile validation
-    if (!/^\d{10}$/.test(mobile)) {
-      return res.status(400).json({
-        message: "Mobile number must contain exactly 10 digits"
-      });
-    }
-
-    // Photo validation
     if (!req.file) {
-      return res.status(400).json({
-        message: "Photo is required"
-      });
+      return res.status(400).json({ message: "Photo is required" });
     }
 
     const user = await User.create({
@@ -41,10 +29,8 @@ exports.createUser = async (req, res) => {
 
     res.status(201).json(user);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({
-      message: "Failed to create user"
-    });
+    console.error("CREATE USER ERROR:", error);
+    res.status(500).json({ message: "Failed to create user" });
   }
 };
 
