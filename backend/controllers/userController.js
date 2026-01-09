@@ -6,13 +6,16 @@ const mongoose = require("mongoose");
 ========================= */
 exports.createUser = async (req, res) => {
   try {
-    console.log("BODY:", req.body);
-    console.log("FILE:", req.file);
-
     const { name, dob, email, mobile } = req.body;
 
     if (!name || !dob || !email || !mobile) {
       return res.status(400).json({ message: "All fields are required" });
+    }
+
+    if (!/^\d{10}$/.test(mobile)) {
+      return res.status(400).json({
+        message: "Mobile number must be exactly 10 digits"
+      });
     }
 
     if (!req.file) {
@@ -28,7 +31,15 @@ exports.createUser = async (req, res) => {
     });
 
     res.status(201).json(user);
+
   } catch (error) {
+    // 🔥 HANDLE DUPLICATE EMAIL
+    if (error.code === 11000 && error.keyPattern?.email) {
+      return res.status(409).json({
+        message: "User with this email already exists"
+      });
+    }
+
     console.error("CREATE USER ERROR:", error);
     res.status(500).json({ message: "Failed to create user" });
   }
