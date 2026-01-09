@@ -16,8 +16,18 @@ let currentEditId = null;
 async function loadUsers() {
   try {
     const res = await fetch(API_URL);
+
+    if (!res.ok) {
+      throw new Error("Fetch failed");
+    }
+
     const users = await res.json();
     records.innerHTML = "";
+
+    if (users.length === 0) {
+      records.innerHTML = "<p style='opacity:0.6'>No users found</p>";
+      return;
+    }
 
     users.forEach(user => {
       const row = document.createElement("div");
@@ -25,7 +35,7 @@ async function loadUsers() {
 
       row.innerHTML = `
         <div class="user-cell">
-          <img src="${BACKEND_URL}/uploads/${user.photo}" />
+          <img src="/uploads/${user.photo}" />
           <strong>${user.name}</strong>
         </div>
 
@@ -42,6 +52,7 @@ async function loadUsers() {
     });
   } catch (err) {
     alert("Failed to load users");
+    console.error(err);
   }
 }
 
@@ -49,20 +60,30 @@ async function loadUsers() {
    OPEN EDIT MODAL
 ========================= */
 async function openEdit(id) {
-  const res = await fetch(API_URL);
-  const users = await res.json();
-  const user = users.find(u => u._id === id);
+  try {
+    const res = await fetch(API_URL);
+    const users = await res.json();
+    const user = users.find(u => u._id === id);
 
-  document.getElementById("editName").value = user.name;
-  document.getElementById("editDob").value = user.dob.split("T")[0];
-  document.getElementById("editEmail").value = user.email;
-  document.getElementById("editMobile").value = user.mobile;
+    if (!user) {
+      alert("User not found");
+      return;
+    }
 
-  editPreview.src = `${BACKEND_URL}/uploads/${user.photo}`;
-  editPreview.style.display = "block";
+    document.getElementById("editName").value = user.name;
+    document.getElementById("editDob").value = user.dob.split("T")[0];
+    document.getElementById("editEmail").value = user.email;
+    document.getElementById("editMobile").value = user.mobile;
 
-  currentEditId = id;
-  modal.classList.add("show");
+    editPreview.src = `/uploads/${user.photo}`;
+    editPreview.style.display = "block";
+
+    currentEditId = id;
+    modal.classList.add("show");
+  } catch (err) {
+    alert("Failed to open edit modal");
+    console.error(err);
+  }
 }
 
 /* =========================
@@ -94,6 +115,8 @@ editPhotoInput.onchange = () => {
 editForm.addEventListener("submit", async e => {
   e.preventDefault();
 
+  if (!currentEditId) return;
+
   const data = new FormData(editForm);
 
   try {
@@ -102,16 +125,18 @@ editForm.addEventListener("submit", async e => {
       body: data
     });
 
+    const result = await res.json();
+
     if (!res.ok) {
-      const err = await res.json();
-      alert(err.message || "Update failed");
+      alert(result.message || "Update failed");
       return;
     }
 
     closeModal();
     loadUsers();
-  } catch {
+  } catch (err) {
     alert("Server error while updating user");
+    console.error(err);
   }
 });
 
@@ -133,10 +158,16 @@ async function deleteUser(id) {
   if (!confirm("Delete this user?")) return;
 
   try {
-    await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+    const res = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+
+    if (!res.ok) {
+      throw new Error("Delete failed");
+    }
+
     loadUsers();
-  } catch {
+  } catch (err) {
     alert("Failed to delete user");
+    console.error(err);
   }
 }
 
